@@ -5,6 +5,7 @@ const Board = () => {
   const [state, SetState] = useState(Array(9).fill(null));
   const [isx, Setisx] = useState(true);
   const [winner, setWinner] = useState(null);
+  const [isTie, setIsTie] = useState(false); // NEW
 
   const checkWinner = (squares) => {
     const winningCombinations = [
@@ -27,7 +28,7 @@ const Board = () => {
 
   const Handelclick = (index) => {
     const copystate = [...state];
-    if (copystate[index] || winner) return;
+    if (copystate[index] || winner || isTie) return; // Prevent click if tie
 
     copystate[index] = isx ? "X" : "O";
     SetState(copystate);
@@ -38,6 +39,11 @@ const Board = () => {
       setTimeout(() => {
         setWinner(win);
       }, 100);
+    } else if (copystate.every((cell) => cell !== null)) {
+      // All squares filled, no winner
+      setTimeout(() => {
+        setIsTie(true);
+      }, 100);
     }
   };
 
@@ -45,6 +51,7 @@ const Board = () => {
     SetState(Array(9).fill(null));
     Setisx(true);
     setWinner(null);
+    setIsTie(false); // Reset tie
   };
 
   const handleExit = () => {
@@ -75,6 +82,18 @@ const Board = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h2>🎉 {winner} Wins!</h2>
+            <div className="modal-buttons">
+              <button onClick={handleRestart}>Play Again</button>
+              <button onClick={handleExit}>Exit</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isTie && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>🤝 It's a tie! Try again.</h2>
             <div className="modal-buttons">
               <button onClick={handleRestart}>Play Again</button>
               <button onClick={handleExit}>Exit</button>
